@@ -12,17 +12,18 @@ import com.kunminx.puremusic.domain.event.DownloadEvent;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 数据下载 Request
+ * Data Download Request
  * <p>
- * TODO tip 1：让 UI 和业务分离，让数据总是从生产者流向消费者
+ * TODO Tip 1: Separate UI from business logic, ensuring that data always flows from producer to consumer.
  * <p>
- * UI逻辑和业务逻辑，本质区别在于，前者是数据的消费者，后者是数据的生产者，
- * "领域层组件" 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+ * The key difference between UI logic and business logic is that the former is the consumer of data, while the latter is the producer.
+ * The "domain layer component" serves as the data producer, and its responsibility should be limited to "request scheduling and result distribution".
  * <p>
- * 换言之，"领域层组件" 中应当只关注数据的生成，而不关注数据的使用，
- * 改变 UI 状态的逻辑代码，只应在表现层页面中编写、在 Observer 回调中响应数据的变化，
- * 将来升级到 Jetpack Compose 更是如此，
+ * In other words, the "domain layer component" should only focus on data generation, not on data usage.
+ * Logic that modifies the UI state should only be written in the presentation layer, in the Observer callback responding to data changes.
+ * When upgrading to Jetpack Compose, this principle remains the same.
  * <p>
+ * Example usage:
  * Activity {
  * onCreate(){
  * vm.livedata.observe { result->
@@ -32,26 +33,25 @@ import io.reactivex.disposables.Disposable;
  * }
  * }
  * <p>
- * 如这么说无体会，详见《Jetpack MVVM 分层设计》解析
+ * For a deeper understanding, refer to the article on "Jetpack MVVM Layered Architecture":
  * https://xiaozhuanlan.com/topic/6741932805
  * <p>
- * <p>
- * Create by KunMinX at 20/03/18
+ * Created by KunMinX on 20/03/18
  */
 public class DownloadRequester extends MviDispatcher<DownloadEvent> {
 
     private Disposable mDisposable;
 
-    //TODO Tip 2：基于 "单一职责原则"，宜将 Jetpack ViewModel 框架划分为 state-ViewModel 和 result-ViewModel，
-    // result-ViewModel 作为领域层组件，仅提取和继承 Jetpack ViewModel 框架中 "作用域管理" 的能力，
-    // 使业务实例能根据需要，被单个页面独享，或多个页面共享，例如：
+    //TODO Tip 2: Based on the "Single Responsibility Principle", Jetpack's ViewModel framework should be divided into state-ViewModel and result-ViewModel.
+    // result-ViewModel serves as a domain layer component, inheriting only the "scope management" ability from the Jetpack ViewModel framework,
+    // so that the business instance can be uniquely owned by a single page or shared across multiple pages, e.g.:
     //
     // mDownloadRequester = getFragmentScopeViewModel(DownloadRequester.class);
     // mGlobalDownloadRequester = getActivityScopeViewModel(DownloadRequester.class);
     //
-    // 在本案例中，fragment 级作用域的 mDownloadRequester 只走 DownloadEvent.EVENT_DOWNLOAD 业务，
-    // Activity 级作用域的 mGlobalDownloadRequester 只走 DownloadEvent.EVENT_DOWNLOAD_GLOBAL 业务，
-    // 二者都为 SearchFragment 所持有，用于对比不同作用域的效果，
+    // In this case, mDownloadRequester for fragment scope only handles DownloadEvent.EVENT_DOWNLOAD business,
+    // while mGlobalDownloadRequester for activity scope handles DownloadEvent.EVENT_DOWNLOAD_GLOBAL business.
+    // Both are held by the SearchFragment to compare the effects of different scopes.
 
     @Override
     protected void onHandle(DownloadEvent event) {
@@ -86,3 +86,4 @@ public class DownloadRequester extends MviDispatcher<DownloadEvent> {
         }
     }
 }
+

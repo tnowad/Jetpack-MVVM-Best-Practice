@@ -25,21 +25,22 @@ import com.kunminx.architecture.domain.usecase.UseCase;
 import com.kunminx.puremusic.data.bean.DownloadState;
 
 /**
- * UseCase 示例，实现 LifeCycle 接口，单独服务于 有 “叫停” 需求 的业务
+ * UseCase Example, implements the LifeCycle interface, dedicated to services with "stop" requirements.
  * <p>
- * TODO tip：
- * 同样是“下载”，我不是在数据层分别写两个方法，
- * 而是遵循开闭原则，在 ViewModel 和 数据层之间，插入一个 UseCase，来专门负责可叫停的情况，
- * 除了开闭原则，使用 UseCase 还有个考虑就是避免内存泄漏，
- * 具体缘由可详见 https://xiaozhuanlan.com/topic/6257931840 评论区 15 楼
- * 以及《这是一份 “架构模式” 自驾攻略》的解析
+ * TODO tip:
+ * Instead of writing two methods separately in the data layer for "download,"
+ * I follow the Open/Closed Principle and insert a UseCase between the ViewModel and the data layer
+ * to specifically handle situations where the process can be stopped.
+ * Besides the Open/Closed Principle, using UseCase also helps avoid memory leaks.
+ * For a detailed explanation, see the 15th comment in the discussion on https://xiaozhuanlan.com/topic/6257931840
+ * and the analysis of "This is a self-driving guide to 'Architecture Patterns'"
  * https://xiaozhuanlan.com/topic/8204519736
  * <p>
  * <p>
- * 现已更换为在 MVI-Dispatcher 中处理，具体可参见 DownloadRequest 实现
+ * Now, the process is handled within the MVI-Dispatcher. For implementation details, refer to the DownloadRequest.
  * <p>
  * <p>
- * Create by KunMinX at 19/11/25
+ * Created by KunMinX at 19/11/25
  */
 @Deprecated
 public class CanBeStoppedUseCase extends UseCase<CanBeStoppedUseCase.RequestValues,
@@ -47,12 +48,12 @@ public class CanBeStoppedUseCase extends UseCase<CanBeStoppedUseCase.RequestValu
 
 //    private final DownloadState downloadState = new DownloadState();
 
-    //TODO tip：让 CanBeStoppedUseCase 可观察页面生命周期，
-    // 从而在页面即将退出、且下载请求尚未完成时，
-    // 及时通知数据层取消本次请求，以避免资源浪费和一系列不可预期的问题。
+    //TODO tip: Make CanBeStoppedUseCase observe the page lifecycle.
+    // This allows the data layer to be notified to cancel the request in time when the page is about to exit
+    // and the download request is not yet completed, avoiding resource waste and unpredictable issues.
 
-    // 关于 Lifecycle 组件的存在意义，可详见《为你还原一个真实的 Jetpack Lifecycle》篇的解析
-    // https://xiaozhuanlan.com/topic/3684721950
+    // For a deeper understanding of the role of Lifecycle components, refer to the "Restoring a Real Jetpack Lifecycle"
+    // analysis: https://xiaozhuanlan.com/topic/3684721950
 
     @Override
     public void onStop(@NonNull LifecycleOwner owner) {
@@ -67,7 +68,7 @@ public class CanBeStoppedUseCase extends UseCase<CanBeStoppedUseCase.RequestValu
     @Override
     protected void executeUseCase(RequestValues requestValues) {
 
-        //访问数据层资源，在 UseCase 中处理带叫停性质的业务
+        // Access data layer resources to handle business logic with stoppable characteristics
 
 //        DataRepository.getInstance().downloadFile(downloadState, dataResult -> {
 //            getUseCaseCallback().onSuccess(new ResponseValue(dataResult));
@@ -91,3 +92,4 @@ public class CanBeStoppedUseCase extends UseCase<CanBeStoppedUseCase.RequestValu
         }
     }
 }
+

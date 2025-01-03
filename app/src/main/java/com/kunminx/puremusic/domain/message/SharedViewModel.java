@@ -22,18 +22,18 @@ import com.kunminx.architecture.domain.message.MutableResult;
 import com.kunminx.architecture.domain.message.Result;
 
 /**
- * TODO tip：本类专用于跨页面通信，
- * 本类已被 PageMessenger 类代替，具体可参见 PageMessenger 类说明
+ * TODO Tip: This class is used for cross-page communication,
+ * This class has been replaced by the PageMessenger class. For details, refer to the PageMessenger class description.
  * <p>
- * Create by KunMinX at 19/10/16
+ * Created by KunMinX on 19/10/16
  */
 @Deprecated
 public class SharedViewModel extends ViewModel {
 
-    //TODO tip 2：此处演示 UnPeekLiveData 配合 SharedViewModel 实现 "生命周期安全、可靠一致" 消息分发。
+    //TODO Tip 2: This demonstrates how UnPeekLiveData combined with SharedViewModel can achieve "lifecycle-safe, reliable, consistent" message distribution.
 
-    //TODO tip 3：为便于理解，原 UnPeekLiveData 已改名为 MutableResult；
-    // ProtectedUnPeekLiveData 改名 Result；
+    //TODO Tip 3: To make it easier to understand, the original UnPeekLiveData has been renamed to MutableResult;
+    // ProtectedUnPeekLiveData has been renamed to Result;
 
     private final MutableResult<Boolean> toCloseSlidePanelIfExpanded = new MutableResult<>();
 
@@ -41,7 +41,7 @@ public class SharedViewModel extends ViewModel {
 
     private final MutableResult<Boolean> toOpenOrCloseDrawer = new MutableResult<>();
 
-    //TODO tip 4：可通过构造器方式配置 MutableResult
+    //TODO Tip 4: MutableResult can be configured via constructor.
 
     private final MutableResult<Boolean> toAddSlideListener =
         new MutableResult.Builder<Boolean>().setAllowNullValue(false).create();
@@ -78,3 +78,4 @@ public class SharedViewModel extends ViewModel {
         toAddSlideListener.setValue(add);
     }
 }
+

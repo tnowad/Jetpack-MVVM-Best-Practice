@@ -35,17 +35,18 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 /**
- * 用户账户 Request
+ * User Account Request
  * <p>
- * TODO tip 1：让 UI 和业务分离，让数据总是从生产者流向消费者
+ * TODO Tip 1: Separate UI from business logic and ensure data always flows from producer to consumer
  * <p>
- * UI逻辑和业务逻辑，本质区别在于，前者是数据的消费者，后者是数据的生产者，
- * "领域层组件" 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+ * The difference between UI logic and business logic is that the former consumes data, while the latter produces data.
+ * The "domain layer component" is the producer of data, and its responsibility should be limited to "request scheduling and result distribution".
  * <p>
- * 换言之，"领域层组件" 中应当只关注数据的生成，而不关注数据的使用，
- * 改变 UI 状态的逻辑代码，只应在表现层页面中编写、在 Observer 回调中响应数据的变化，
- * 将来升级到 Jetpack Compose 更是如此，
+ * In other words, the "domain layer component" should only focus on data generation, not on data usage.
+ * The logic to change UI states should be written in the presentation layer (e.g., observer callbacks).
+ * When upgrading to Jetpack Compose, this remains the same.
  * <p>
+ * Example usage:
  * Activity {
  * onCreate(){
  * vm.livedata.observe { result->
@@ -55,43 +56,40 @@ import io.reactivex.disposables.Disposable;
  * }
  * }
  * <p>
- * 如这么说无体会，详见《Jetpack MVVM 分层设计》解析
+ * For a deeper understanding, refer to the article on "Jetpack MVVM Layered Architecture":
  * https://xiaozhuanlan.com/topic/6741932805
  * <p>
- * <p>
- * Create by KunMinX at 20/04/26
+ * Created by KunMinX on 20/04/26
  */
 public class AccountRequester extends Requester implements DefaultLifecycleObserver {
 
-    //TODO tip 3：👆👆👆 让 accountRequest 可观察页面生命周期，
-    // 从而在页面即将退出、且登录请求由于网络延迟尚未完成时，
-    // 及时通知数据层取消本次请求，以避免资源浪费和一系列不可预期问题。
+    //TODO Tip 3: Allow accountRequest to observe page lifecycle,
+    // so that when the page exits and the login request has not completed due to network delay,
+    // it can notify the data layer to cancel the request, avoiding unnecessary resource consumption and potential issues.
 
     private final MutableResult<DataResult<String>> tokenResult = new MutableResult<>();
 
-    //TODO tip 4：应顺应 "响应式编程"，做好 "单向数据流" 开发，
-    // MutableResult 应仅限 "鉴权中心" 内部使用，且只暴露 immutable Result 给 UI 层，
-    // 通过 "读写分离" 实现数据从 "领域层" 到 "表现层" 的单向流动，
+    //TODO Tip 4: Follow "reactive programming" principles and maintain "unidirectional data flow".
+    // MutableResult should only be used within the "authentication center" and only expose immutable Result to the UI layer.
+    // Through "separation of read and write", data flows from "domain layer" to "presentation layer" in one direction.
 
-    //如这么说无体会，详见《吃透 LiveData 本质，享用可靠消息鉴权机制》解析。
-    //https://xiaozhuanlan.com/topic/6017825943
+    // For more details, refer to the article "Mastering LiveData for Reliable Message Authentication Mechanisms":
+    // https://xiaozhuanlan.com/topic/6017825943
 
     public Result<DataResult<String>> getTokenResult() {
         return tokenResult;
     }
 
-    //TODO tip 5：模拟可取消的登录请求：
-    //
-    // 配合可观察页面生命周期的 accountRequest，
-    // 从而在页面即将退出、且登录请求由于网络延迟尚未完成时，
-    // 及时通知数据层取消本次请求，以避免资源浪费和一系列不可预期的问题。
+    //TODO Tip 5: Simulate a cancellable login request:
+    // By observing the page lifecycle in accountRequest,
+    // when the page is about to exit and the login request is not yet completed due to network delay,
+    // the data layer is notified to cancel the request, avoiding unnecessary resource consumption and issues.
 
     private Disposable mDisposable;
 
-    //TODO tip 6: requester 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
-    //
-    // 换言之，此处只关注数据的生成和回推，不关注数据的使用，
-    // 改变 UI 状态的逻辑代码，只应在表现层页面中编写，例如 Jetpack Compose 的使用，
+    //TODO Tip 6: As a producer of data, the requester's responsibility should be limited to "request scheduling and result distribution".
+    // In other words, this class should only focus on data generation and feedback, not on data usage.
+    // UI state changes should be handled at the presentation layer (e.g., with Jetpack Compose).
 
     public void requestLogin(User user) {
         DataRepository.getInstance().login(user).subscribe(new Observer<DataResult<String>>() {
@@ -122,11 +120,11 @@ public class AccountRequester extends Requester implements DefaultLifecycleObser
         }
     }
 
-    //TODO tip 7：让 accountRequest 可观察页面生命周期，
-    // 从而在页面即将退出、且登录请求由于网络延迟尚未完成时，
-    // 及时通知数据层取消本次请求，以避免资源浪费和一系列不可预期问题。
+    //TODO Tip 7: Allow accountRequest to observe page lifecycle,
+    // so that when the page exits and the login request is still pending, it can notify the data layer to cancel the request,
+    // avoiding resource waste and potential issues.
 
-    // 关于 Lifecycle 组件的存在意义，详见《为你还原一个真实的 Jetpack Lifecycle》解析
+    // For more on the importance of Lifecycle components, refer to the article "Understanding Jetpack Lifecycle":
     // https://xiaozhuanlan.com/topic/3684721950
 
     @Override
@@ -134,3 +132,4 @@ public class AccountRequester extends Requester implements DefaultLifecycleObser
         cancelLogin();
     }
 }
+

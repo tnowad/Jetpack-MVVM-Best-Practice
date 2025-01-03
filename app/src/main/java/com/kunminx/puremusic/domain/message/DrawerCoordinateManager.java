@@ -29,20 +29,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TODO tip 1：通过 Lifecycle 来实现 "抽屉侧滑禁用与否的判断" 的一致，
+ * TODO Tip 1: Achieve consistency for "whether the drawer side slide is enabled" through Lifecycle,
  * <p>
- * 每个 "需要注册和监听生命周期来判断" 的视图控制器，无需在各自内部手动书写解绑等操作。
- * 如这么说无体会，详见《为你还原一个真实的 Jetpack Lifecycle》
+ * Each "view controller that needs to register and observe the lifecycle" does not need to manually write unbinding operations inside themselves.
+ * If this is unclear, refer to "Restoring a Real Jetpack Lifecycle" here:
  * https://xiaozhuanlan.com/topic/3684721950
  * <p>
- * TODO tip 2：与此同时，作为用于 "跨页面通信" 单例，本类也承担 "可信源" 职责，
- * 所有对 Drawer 状态协调相关的请求都交由本单例处理，并统一分发给所有订阅者页面。
+ * TODO Tip 2: Meanwhile, as a singleton used for "cross-page communication", this class also takes on the role of a "trusted source",
+ * all requests related to Drawer state coordination are handled by this singleton and uniformly distributed to all subscriber pages.
  * <p>
- * 如这么说无体会，详见《吃透 LiveData 本质，享用可靠消息鉴权机制》解析。
+ * If this is unclear, refer to "Mastering the Essence of LiveData and Enjoying a Reliable Message Authentication Mechanism" analysis here:
  * https://xiaozhuanlan.com/topic/6017825943
  * <p>
  * <p>
- * Create by KunMinX at 19/11/3
+ * Created by KunMinX on 19/11/3
  */
 public class DrawerCoordinateManager implements DefaultLifecycleObserver {
 
@@ -76,10 +76,11 @@ public class DrawerCoordinateManager implements DefaultLifecycleObserver {
         enableSwipeDrawer.setValue(isNoneSecondaryPage());
     }
 
-    //TODO tip 3：让 NetworkStateManager 可观察页面生命周期，
-    // 从而在进入或离开目标页面时，自动在此登记和处理抽屉的禁用和解禁，避免一系列不可预期问题。
+    //TODO Tip 3: Make NetworkStateManager observe the page lifecycle,
+    // so that when entering or leaving the target page, it automatically registers and handles disabling and enabling the drawer,
+    // avoiding a series of unpredictable issues.
 
-    // 关于 Lifecycle 组件的存在意义，可详见《为你还原一个真实的 Jetpack Lifecycle》解析
+    // For a detailed explanation of the significance of the Lifecycle component, refer to "Restoring a Real Jetpack Lifecycle" analysis
     // https://xiaozhuanlan.com/topic/3684721950
 
     @Override

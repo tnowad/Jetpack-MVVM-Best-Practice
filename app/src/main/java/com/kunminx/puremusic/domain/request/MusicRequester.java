@@ -26,16 +26,17 @@ import com.kunminx.puremusic.data.bean.TestAlbum;
 import com.kunminx.puremusic.data.repository.DataRepository;
 
 /**
- * 音乐资源  Request
+ * Music Resource Request
  * <p>
- * TODO tip 1：让 UI 和业务分离，让数据总是从生产者流向消费者
+ * TODO tip 1: Separate UI from business logic, ensure data always flows from producer to consumer
  * <p>
- * UI逻辑和业务逻辑，本质区别在于，前者是数据的消费者，后者是数据的生产者，
- * "领域层组件" 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+ * The essential difference between UI logic and business logic is that the former is a consumer of data,
+ * and the latter is a producer of data. The "domain layer components" as data producers should only focus
+ * on "request dispatching and result distribution."
  * <p>
- * 换言之，"领域层组件" 中应当只关注数据的生成，而不关注数据的使用，
- * 改变 UI 状态的逻辑代码，只应在表现层页面中编写、在 Observer 回调中响应数据的变化，
- * 将来升级到 Jetpack Compose 更是如此，
+ * In other words, the "domain layer components" should only focus on generating data and not on its usage.
+ * Logic to change UI state should only be written in the view layer (e.g., in observer callbacks) in response to
+ * data changes. When upgrading to Jetpack Compose, this remains true.
  * <p>
  * Activity {
  * onCreate(){
@@ -46,48 +47,50 @@ import com.kunminx.puremusic.data.repository.DataRepository;
  * }
  * }
  * <p>
- * TODO tip 2：Requester 通常按业务划分
- * 一个项目中通常可存在多个 Requester 类，
- * 每个页面可根据业务需要，持有多个不同 Requester 实例，
- * 通过 PublishSubject 回推一次性消息，并在表现层 Observer 中分流，
- * 对于 Event，直接执行，对于 State，使用 BehaviorSubject 通知 View 渲染和兜着状态，
+ * TODO tip 2: Requesters are usually divided by business logic
+ * In a project, there are typically multiple Requester classes. Each page may hold different Requester instances
+ * according to its business needs. These instances push one-time messages via PublishSubject, and the observer
+ * in the view layer can further split the logic: execute events directly and use BehaviorSubject to notify views
+ * for state changes.
  * <p>
  * Activity {
  * onCreate(){
  * request.observe {result ->
- * is Event ? -> execute one time
- * is State ? -> BehaviorSubject setValue and notify
+ * is Event ? -> execute once
+ * is State ? -> set value and notify BehaviorSubject
  * }
  * }
  * <p>
- * 如这么说无体会，详见《Jetpack MVVM 分层设计解析》解析
+ * If this explanation is unclear, please refer to the "Jetpack MVVM Layered Design" analysis:
  * https://xiaozhuanlan.com/topic/6741932805
  * <p>
  * <p>
- * Create by KunMinX at 19/10/29
+ * Created by KunMinX at 19/10/29
  */
 public class MusicRequester extends Requester {
 
     private final MutableResult<DataResult<TestAlbum>> mFreeMusicsResult = new MutableResult<>();
 
-    //TODO tip 4：应顺应 "响应式编程"，做好 "单向数据流" 开发，
-    // MutableResult 应仅限 "鉴权中心" 内部使用，且只暴露 immutable Result 给 UI 层，
-    // 通过 "读写分离" 实现数据从 "领域层" 到 "表现层" 的单向流动，
+    //TODO tip 4: Follow "Reactive Programming" principles and implement "Unidirectional Data Flow"
+    // MutableResult should only be used internally in the "Authentication Center," exposing immutable Result
+    // to the UI layer. This enforces "read-write separation," ensuring that data flows from the domain layer
+    // to the view layer in a unidirectional manner.
 
-    //如这么说无体会，详见《吃透 LiveData 本质，享用可靠消息鉴权机制》解析。
-    //https://xiaozhuanlan.com/topic/6017825943
+    // If this explanation is unclear, refer to the "Mastering LiveData and Reliable Message Authentication"
+    // analysis: https://xiaozhuanlan.com/topic/6017825943
 
     public Result<DataResult<TestAlbum>> getFreeMusicsResult() {
         return mFreeMusicsResult;
     }
 
-    //TODO tip 5: requester 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+    //TODO tip 5: The requester's role is solely for "request dispatching and result distribution"
     //
-    // 换言之，此处只关注数据的生成和回推，不关注数据的使用，
-    // 改变 UI 状态的逻辑代码，只应在表现层页面中编写，例如 Jetpack Compose 的使用，
+    // In other words, here we focus on data generation and forwarding, not its usage.
+    // Logic to change UI state should only be written in the view layer (e.g., with Jetpack Compose).
 
     @SuppressLint("CheckResult")
     public void requestFreeMusics() {
         DataRepository.getInstance().getFreeMusic().subscribe(mFreeMusicsResult::setValue);
     }
 }
+

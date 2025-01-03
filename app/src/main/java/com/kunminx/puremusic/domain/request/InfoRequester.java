@@ -28,17 +28,18 @@ import com.kunminx.puremusic.data.repository.DataRepository;
 import java.util.List;
 
 /**
- * 信息列表 Request
+ * Information List Request
  * <p>
- * TODO tip 1：让 UI 和业务分离，让数据总是从生产者流向消费者
+ * TODO Tip 1: Separate UI from business logic, ensuring that data always flows from producer to consumer.
  * <p>
- * UI逻辑和业务逻辑，本质区别在于，前者是数据的消费者，后者是数据的生产者，
- * "领域层组件" 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+ * The key difference between UI logic and business logic is that the former is the consumer of data, while the latter is the producer.
+ * The "domain layer component" serves as the data producer, and its responsibility should be limited to "request scheduling and result distribution".
  * <p>
- * 换言之，"领域层组件" 中应当只关注数据的生成，而不关注数据的使用，
- * 改变 UI 状态的逻辑代码，只应在表现层页面中编写、在 Observer 回调中响应数据的变化，
- * 将来升级到 Jetpack Compose 更是如此，
+ * In other words, the "domain layer component" should only focus on data generation, not on data usage.
+ * Logic that modifies the UI state should only be written in the presentation layer, in the Observer callback responding to data changes.
+ * When upgrading to Jetpack Compose, this principle remains the same.
  * <p>
+ * Example usage:
  * Activity {
  * onCreate(){
  * vm.livedata.observe { result->
@@ -48,11 +49,10 @@ import java.util.List;
  * }
  * }
  * <p>
- * TODO tip 2：Requester 通常按业务划分
- * 一个项目中通常可存在多个 Requester 类，
- * 每个页面可根据业务需要，持有多个不同 Requester 实例，
- * 通过 PublishSubject 回推一次性消息，并在表现层 Observer 中分流，
- * 对于 Event，直接执行，对于 State，使用 BehaviorSubject 通知 View 渲染和兜着状态，
+ * TODO Tip 2: Requesters are usually divided by business logic.
+ * There can be multiple Requester classes in a project, and each page can hold multiple different Requester instances based on business needs.
+ * Through PublishSubject, one-time messages are pushed back and branched in the presentation layer Observer.
+ * For Events, execute them directly; for States, use BehaviorSubject to notify the view and carry the state.
  * <p>
  * Activity {
  * onCreate(){
@@ -62,31 +62,30 @@ import java.util.List;
  * }
  * }
  * <p>
- * 如这么说无体会，详见《Jetpack MVVM 分层设计解析》解析
+ * For a deeper understanding, refer to the article on "Jetpack MVVM Layered Architecture":
  * https://xiaozhuanlan.com/topic/6741932805
  * <p>
- * <p>
- * Create by KunMinX at 19/11/2
+ * Created by KunMinX on 19/11/2
  */
 public class InfoRequester extends Requester {
 
     private final MutableResult<DataResult<List<LibraryInfo>>> mLibraryResult = new MutableResult<>();
 
-    //TODO tip 4：应顺应 "响应式编程"，做好 "单向数据流" 开发，
-    // MutableResult 应仅限 "鉴权中心" 内部使用，且只暴露 immutable Result 给 UI 层，
-    // 通过 "读写分离" 实现数据从 "领域层" 到 "表现层" 的单向流动，
+    //TODO Tip 4: Follow "reactive programming" and implement "one-way data flow" development.
+    // MutableResult should only be used internally in the "authentication center" and expose only immutable Result to the UI layer.
+    // Implement one-way data flow from the "domain layer" to the "presentation layer" through "read-write separation".
 
-    //如这么说无体会，详见《吃透 LiveData 本质，享用可靠消息鉴权机制》解析。
-    //https://xiaozhuanlan.com/topic/6017825943
+    // For a deeper understanding, refer to the article on "Mastering LiveData Essence, Enjoying Reliable Message Authentication":
+    // https://xiaozhuanlan.com/topic/6017825943
 
     public Result<DataResult<List<LibraryInfo>>> getLibraryResult() {
         return mLibraryResult;
     }
 
-    //TODO tip 5: requester 作为数据的生产者，职责应仅限于 "请求调度 和 结果分发"，
+    //TODO Tip 5: Requester, as the data producer, should only focus on "request scheduling and result distribution".
     //
-    // 换言之，此处只关注数据的生成和回推，不关注数据的使用，
-    // 改变 UI 状态的逻辑代码，只应在表现层页面中编写，例如 Jetpack Compose 的使用，
+    // In other words, it should focus solely on data generation and pushback, not on data usage.
+    // Logic for changing the UI state should only be written in the presentation layer, such as with Jetpack Compose.
 
     @SuppressLint("CheckResult")
     public void requestLibraryInfo() {
@@ -94,3 +93,4 @@ public class InfoRequester extends Requester {
             DataRepository.getInstance().getLibraryInfo().subscribe(mLibraryResult::setValue);
     }
 }
+
