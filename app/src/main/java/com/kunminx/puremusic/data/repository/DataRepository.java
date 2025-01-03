@@ -79,8 +79,8 @@ public class DataRepository {
             .build();
     }
 
-    //TODO tip: 通过 "响应式框架" 往领域层回推数据，
-    // 与此相对应，kotlin 下使用 flow{ ... emit(...) }.flowOn(Dispatchers.xx)
+    //TODO Tip: Push data back to the domain layer via the "reactive framework",
+    // Correspondingly, in Kotlin, use flow{ ... emit(...) }.flowOn(Dispatchers.xx)
 
     public Observable<DataResult<TestAlbum>> getFreeMusic() {
         return AsyncTask.doIO(emitter -> {
@@ -103,12 +103,12 @@ public class DataRepository {
     }
 
     /**
-     * TODO：模拟下载任务:
+     * TODO: Simulate download task:
      */
     @SuppressLint("CheckResult")
     public Observable<Integer> downloadFile() {
         return AsyncTask.doIO(emitter -> {
-            //在内存中模拟 "数据读写"，假装是在 "文件 IO"，
+            // Simulate "data read and write" in memory, pretending to be "file IO",
 
             byte[] bytes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
@@ -125,14 +125,15 @@ public class DataRepository {
     }
 
     /**
-     * TODO 模拟登录的网络请求
+     * TODO: Simulate network request for login
      *
-     * @param user ui 层填写的用户信息
+     * @param user User information entered by the UI layer
      */
     public Observable<DataResult<String>> login(User user) {
 
-        // 使用 retrofit 或任意你喜欢的库实现网络请求。此处以 retrofit 写个简单例子，
-        // 并且如使用 rxjava，还可额外依赖 RxJavaCallAdapterFactory 来简化编写，具体自行网上查阅，此处不做累述，
+        // Use retrofit or any library you prefer for network requests. Here's a simple example using retrofit,
+        // If you use RxJava, you can additionally depend on RxJavaCallAdapterFactory to simplify the code.
+        // Refer to online resources for further details, no elaboration here.
 
         return AsyncTask.doIO(emitter -> {
             Call<String> call = retrofit.create(AccountService.class).login(user.getName(), user.getPassword());

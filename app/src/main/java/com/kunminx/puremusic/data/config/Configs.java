@@ -24,10 +24,10 @@ import com.kunminx.keyvalue.annotation.KeyValueX;
 import com.kunminx.puremusic.data.bean.User;
 
 /**
- * TODO tip 1：消除 Android 项目 KeyValue 样板代码，让 key、value、get、put、init 缩减为一，不再 KV 爆炸。
- * 如这么说无体会，详见 https://juejin.cn/post/7121955840319291428
+ * TODO Tip 1: Eliminate Android project KeyValue boilerplate code, so that key, value, get, put, init are unified and no longer cause KV explosion.
+ * If this sounds unclear, refer to https://juejin.cn/post/7121955840319291428
  * <p>
- * Create by KunMinX at 18/9/28
+ * Created by KunMinX on 18/9/28
  */
 @KeyValueX
 public interface Configs {
