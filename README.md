@@ -1,104 +1,88 @@
-![](https://images.xiaozhuanlan.com/photo/2021/b106fd65d34a4a724244e7c5b42a2372.jpg)
+![Image](https://images.xiaozhuanlan.com/photo/2021/b106fd65d34a4a724244e7c5b42a2372.jpg)
 
-[《重学安卓》](https://xiaozhuanlan.com/kunminx)付费读者加微信进群：myatejx
+[《Learning Android Again》](https://xiaozhuanlan.com/kunminx) paid readers can add WeChat to join the group: myatejx
 
-> [免费试读](https://juejin.cn/post/7106042518457810952)，**[专栏目录](https://www.yuque.com/kunminx/fpmbc5/ghlwb5)**，**[更新动态](https://www.yuque.com/kunminx/fpmbc5/in59vu)**，[优惠政策](https://www.yuque.com/kunminx/fpmbc5/of601a)
+> [Free preview](https://juejin.cn/post/7106042518457810952), **[Column directory](https://www.yuque.com/kunminx/fpmbc5/ghlwb5)**, **[Update details](https://www.yuque.com/kunminx/fpmbc5/in59vu)**, [Discount policy](https://www.yuque.com/kunminx/fpmbc5/of601a)
 
-&nbsp;
+---
 
-# 版权声明
+# Copyright Declaration
 
-我们就本项目 "被卖课" 一事，在掘金发表一期专访 [《开源项目被人拿去做课程卖了 1000 多万是什么体验》](https://juejin.im/post/5ecb4950518825431a669897)
+We published an exclusive interview on Juejin about this project being "sold as a course" [《What’s it like to have your open-source project turned into a course and sold for over 10 million?》](https://juejin.im/post/5ecb4950518825431a669897)
 
-本项目系我为方便开发者们 **无痛理解 Google 开源 Jetpack MVVM 中每个架构组件的 存在缘由、职责边界**，而 **精心设计的高频应用场景**，
+This project is designed to help developers **understand Google’s open-source Jetpack MVVM components and their purpose and responsibility boundaries** through high-frequency application scenarios.
 
-与此同时，本项目是作为 [《重学安卓》](https://xiaozhuanlan.com/topic/6017825943)专栏 Jetpack MVVM 系列文章 “配套项目” 而存在，**文章内容和项目代码设计均涉及本人对 Jetpack MVVM 独家理解，本人对此享有著作权**。
+At the same time, this project serves as the "supporting project" for the [《Learning Android Again》](https://xiaozhuanlan.com/topic/6017825943) column's Jetpack MVVM series articles. **The content of the articles and the project code design reflect my unique understanding of Jetpack MVVM, and I hold copyright for this.**
 
-任何组织或个人，未经与作者本人沟通，不得将本项目代码设计和本人对 Jetpack MVVM 独家理解用于 "**打包贩卖、引流、出书 和 卖课**" 等商业用途。
+No organization or individual may use this project's code design and my exclusive understanding of Jetpack MVVM for "**packaging and selling, lead generation, publishing, and selling courses**" or other commercial purposes without prior communication with the author.
 
-&nbsp;
+---
 
-# 架构图一览
+# Architecture Overview
 
-![](https://images.xiaozhuanlan.com/photo/2023/b10d6c52e0cdb4197725059399fad12f.jpg)
+![Architecture Diagram](https://images.xiaozhuanlan.com/photo/2023/b10d6c52e0cdb4197725059399fad12f.jpg)
 
-&nbsp;
+---
 
-# 前言
+# Preface
 
-上周我在各大 “技术社区” 发表了一篇 [《Jetpack MVVM 精讲》](https://juejin.im/post/5dafc49b6fb9a04e17209922)，原以为在 “知识网红” 唱衰 Android 的 2019 会无人问津，没想到文章一经发布，从 “国内知名公司” 架构师、技术经理，到 “世界级公司”  Android 开发都在看。
+Last week, I published an article [《In-depth Jetpack MVVM》](https://juejin.im/post/5dafc49b6fb9a04e17209922) on various "tech communities." Initially, I thought it would go unnoticed, especially in 2019 when Android was being criticized. But to my surprise, the article gained attention from architects and technical managers at "well-known domestic companies" and Android developers from "world-class companies."
 
-且从读者反馈来看，近期大部分 Android 开发已跳出舒适圈，开始尝试认识和应用 Jetpack MVVM 到实际项目中。
+Feedback from readers shows that most Android developers have recently stepped out of their comfort zones and started exploring and applying Jetpack MVVM in real-world projects.
 
-只可惜，关于 Jetpack MVVM，网上多是 **东拼西凑、人云亦云、通篇贴代码** 文章，这不仅不能提供 “完整视角” 帮助读者 首先明确背景状况，更是给还没入门 Jetpack 读者 **徒添困扰**、起 **劝退** 作用。
+Unfortunately, there is an abundance of **disjointed, repetitive, code-heavy articles** about Jetpack MVVM online. These articles neither provide a "complete perspective" to help readers clarify the context nor help new Jetpack learners—often creating confusion and discouraging them.
 
-好消息是，这一期，我们带着 **精心打磨 Jetpack MVVM 最佳实践案例** 来了！
+The good news is, in this issue, we bring you the **best practices for Jetpack MVVM**, carefully crafted!
 
-&nbsp;
-&nbsp;
+---
 
-
-|                       爱不释手交互设计                       |                         连贯用户体验                         |                      可信源统一分发                      |
-| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                          Addictive Interaction Design                          |                            Coherent User Experience                            |                      Reliable Source Unified Distribution                      |
+| :----------------------------------------------------------------------------: | :----------------------------------------------------------------------------: | :----------------------------------------------------------------------------: |
 | ![](https://upload-images.jianshu.io/upload_images/57036-0a5cdc68f003211a.gif) | ![](https://upload-images.jianshu.io/upload_images/57036-2b21db531e51ff03.gif) | ![](https://upload-images.jianshu.io/upload_images/57036-9a541148ce5bed2e.gif) |
 
+| Seamless Switching Between Landscape and Portrait Layouts |
+| :-------------------------------------------------------: |
+|  ![](https://i.loli.net/2021/08/25/X9rado7AfnCEgv3.gif)   |
 
+---
 
-|                   横竖屏布局无缝切换                   |
-| :----------------------------------------------------: |
-| ![](https://i.loli.net/2021/08/25/X9rado7AfnCEgv3.gif) |
+# Project Introduction
 
-&nbsp;
-&nbsp;
+I have 3 years of experience in "mobile business architecture" practice and design, leading or participating in the "reconstruction" of many medium to large-sized projects. I have a deep understanding of Jetpack MVVM's efforts in **establishing standardized development patterns to reduce unpredictable errors**.
 
-# 项目简介
+In this case study, I will show you how Jetpack MVVM **simplifies** and transforms what would otherwise be a very error-prone and time-consuming development task into a simple process with just a few lines of code.
 
-本人拥有 3 年 “移动端业务架构” 践行和设计经验，领导或参与团队 “重构” 中大型项目多达十数个，对 Jetpack MVVM 架构在 “确立规范化、标准化开发模式 以 **减少不可预期错误**” 所作的努力，有深入理解。
+> 👆👆👆 Key Point!
 
+In this project:
 
+> We arrange two sets of **completely different layouts** for **landscape and portrait** modes, and with the help of knowledge like [lifecycle](https://xiaozhuanlan.com/topic/0213584967), [rebuilding mechanism](https://xiaozhuanlan.com/topic/7692814530), [state management](https://xiaozhuanlan.com/topic/7692814530), [DataBinding](https://xiaozhuanlan.com/topic/9816742350), [ViewModel](https://xiaozhuanlan.com/topic/6257931840), [LiveData](https://xiaozhuanlan.com/topic/0168753249), [Navigation](https://xiaozhuanlan.com/topic/5860149732), we easily achieve **seamless switching between portrait and landscape layouts without unexpected errors** with just a few lines of code.
 
-在这个案例中，我将为你展示，Jetpack MVVM 是如何 **以简驭繁** 地将原本十分容易出错、一出错就会耽搁半天的开发工作，通过寥寥几行代码 轻而易举完成。
+> We have multiple Fragment pages that display **playback status indicators** (including play/pause button states, current index indicators for the playlist, etc.) and will show you "how" and "why" to use [LiveData](https://xiaozhuanlan.com/topic/0168753249) **together with** the reliable source [ViewModel](https://xiaozhuanlan.com/topic/6257931840) or singleton to achieve **unified event distribution across the entire app**.
 
-> 👆👆👆 划重点！
+> We arranged cross-page communication between Fragment and Activity to show you how to implement **lifecycle-safe and message-syncing** communication between pages using **Demeter's Law** (also known as the Law of Least Knowledge) and UnPeekLiveData with an app-level SharedViewModel.
 
-&nbsp;
+> We provide content such as view controllers, [ViewModel](https://xiaozhuanlan.com/topic/6257931840), Dispatcher, and DataRepository in directories like `ui.page`, `domain.request`, `data.repository`, etc. This demonstrates how the **one-way dependency** architecture design helps avoid issues like "memory leaks" through layered data requests and responses.
 
-该项目中，
+> The project code is written in ISO-certified industrial-grade Java. We also provide rich comments in the classes above to help you understand why the "skeleton code" is designed this way and how this design **avoids unexpected errors** in the context of software engineering.
 
-> 我们为 **横、竖屏** 场景安排两套 **截然不同布局**，且在 [生命周期](https://xiaozhuanlan.com/topic/0213584967)、[重建机制](https://xiaozhuanlan.com/topic/7692814530)、[状态管理](https://xiaozhuanlan.com/topic/7692814530)、[DataBinding](https://xiaozhuanlan.com/topic/9816742350)、[ViewModel](https://xiaozhuanlan.com/topic/6257931840)、[LiveData](https://xiaozhuanlan.com/topic/0168753249) 、[Navigation](https://xiaozhuanlan.com/topic/5860149732) 等知识点帮助下，通过寥寥几行代码，轻松做到 **在横竖屏两种布局间 无缝切换，且不产生任何 预期外错误**。
+---
 
+Besides **mastering the best practices of MVVM in "simplifying complexity" code**, you will also gain the following from this project:
 
-> 我们在多个 Fragment 页面 分别安排 **播放状态指示器**（包括 播放暂停按钮状态、播放列表当前索引指示 等），并向你展示 “如何” 及 “为何” 通过 [LiveData](https://xiaozhuanlan.com/topic/0168753249) **配合** 可信源 [ViewModel](https://xiaozhuanlan.com/topic/6257931840) 或单例，实现 **全应用范围内 “可追溯事件” 统一分发**。
+1. Clean code style and standard resource naming conventions.
+2. In-depth understanding and proper use of the "view controller" concept.
+3. Full use of AndroidX and Material Design 2.
+4. Best practices for ConstraintLayout.
+5. **Excellent user experience and interaction design**.
+6. No use of Dagger, no complex tricks, and no writing overly difficult code.
+7. The one more thing is:
 
-
-> 我们在 Fragment 和 Activity 之间分别安排 跨页面通信，从而向你展示 如何基于 **迪米特原则**（也称 最少知道原则）、通过 UnPeekLiveData 和 应用级 SharedViewModel 实现 **生命周期安全、确保消息同步可靠一致的 页面通信**。
-
-
-> 我们在 `ui.page` 、`domain.request` 、`data.repository` 等目录下，分别安排 视图控制器、[ViewModel](https://xiaozhuanlan.com/topic/6257931840) 、Dispatcher 、DataRepository 等 内容，从而向你展示，**单向依赖** 架构设计，是如何通过分层 数据请求和响应，**规避 “内存泄漏”** 等问题。
-
-
-> 本项目代码一律采用 经过 ISO 认证 标准化工业级语言 Java 来编写。且在上述类中，我们大都 **提供丰富注释**，助你理解 “骨架代码” 为何要如此设计、如此设计能 **在软件工程背景下** 避免哪些不可预期错误。
-
-&nbsp;
-&nbsp;
-
-除了 **在 "以简驭繁" 代码中 掌握 MVVM 最佳实践**，你还可从该项目中获得内容包括：
-
-1. 整洁代码风格 和 标准资源命名规范。
-2. 对 “视图控制器” 知识点的 深入理解 和 正确使用。
-3. AndroidX 和 Material Design 2 全面使用。
-4. ConstraintLayout 约束布局最佳实践。
-5. **优秀的 用户体验 和 交互设计**。
-6. 绝不使用 Dagger，绝不使用奇技淫巧、编写艰深晦涩代码。
-7. The one more thing is：
-
-即日起，可在 "应用商店" 下载体验！
+You can now download and experience it from the "App Store"!
 
 [![google-play1.png](https://upload-images.jianshu.io/upload_images/57036-f9dbd7810d38ae95.png)](https://www.coolapk.com/apk/247826) [![coolapk1.png](https://upload-images.jianshu.io/upload_images/57036-6cf24d0c9efe8362.png)](https://www.coolapk.com/apk/247826)
 
-
-&nbsp;
-&nbsp;
+---
 
 # Thanks to
 
@@ -108,63 +92,55 @@
 
 [material-components-android](https://github.com/material-components/material-components-android)
 
-[轻听](https://play.google.com/store/apps/details?id=com.tencent.qqmusiclocalplayer)
+[Qingting](https://play.google.com/store/apps/details?id=com.tencent.qqmusiclocalplayer)
 
 [AndroidSlidingUpPanel](https://github.com/umano/AndroidSlidingUpPanel)
 
-项目中使用 图片素材 来自 [UnSplash](https://unsplash.com/) 提供 **免费授权图片**。
+Image materials used in this project are from [UnSplash](https://unsplash.com/), which provides **free licensed images**.
 
-项目中使用 音频素材 来自 [BenSound](https://www.bensound.com/) 提供 **免费授权音乐**。
+Audio materials used in this project are from [BenSound](https://www.bensound.com/), which provides **free licensed music**.
 
-&nbsp;
-&nbsp;
+---
 
-# Who is using
+# Who is Using
 
-根据小伙伴们 “开源库使用情况” 匿名调查问卷参与，截至 2022年5月28日，我们了解到
+According to anonymous surveys of friends' "open-source library usage," by May 28, 2022, we learned that major companies, including "Tencent Music, NetEase, BMW, TCL," have referenced or are using this architecture model we open-sourced, or are using frameworks like [UnPeek-LiveData](https://github.com/KunMinX/UnPeek-LiveData) that we maintain.
 
-包括 “腾讯音乐、网易、BMW、TCL” 在内诸多知名厂商软件，都参考过我们开源的此架构模式，或正在使用我们维护的 [UnPeek-LiveData](https://github.com/KunMinX/UnPeek-LiveData) 等框架。
-
-目前已将统计数据更新到 相关开源库 ReadMe 中，错过本次问卷调查的小伙伴也不用担心，我们继续对此保持开放，不定期将小伙伴们登记的公司和产品更新到表格，
-
-以便吸纳更多小伙伴参与对 “架构组件” 的使用和反馈，集众人所长，让组件得以不断演化和升级。
+We have updated the statistics in the relevant open-source library ReadMe, and those who missed the survey don't need to worry. We will continue to keep it open and periodically update the companies and products listed in the form, inviting more people to participate in using and providing feedback on the "architecture components" to foster continuous evolution and upgrades.
 
 https://wj.qq.com/s2/8362688/124a/
 
-| 集团 / 公司 / 品牌 / 团队                             | 产品           |
-| ----------------------------------------------------- | -------------- |
-| 腾讯音乐                                              | QQ 音乐        |
-| 网易                                                  | 网易云音乐     |
-| TCL                                                   | 内置文件管理器 |
-| 贵州广电网络                                          | 乐播播         |
-| 上海亿保健康管理有限公司                              | 安诺保         |
-|                                                       | 小辣椒         |
-| ezen                                                  | Egshig音乐     |
-| BMW                                                   | Speech         |
-| 上海互教信息有限公司                                  | 知心慧学教师   |
-| 美术宝                                                | 弹唱宝         |
-|                                                       | 网安           |
-| 字节跳动直播                                          | 直播 SDK       |
-| 一加手机                                              | OPNote         |
+| Group / Company / Brand / Team            | Product               |
+| ----------------------------------------- | --------------------- |
+| Tencent Music                             | QQ Music              |
+| NetEase                                   | NetEase Cloud Music   |
+| TCL                                       | Built-in File Manager |
+| Guizhou Broadcasting Network              | LeBoBo                |
+| Shanghai Yibo Health Management Co., Ltd. | Anobo                 |
+|                                           | XiaoLaJiao            |
+| ezen                                      | Egshig Music          |
+| BMW                                       | Speech                |
+| Shanghai Hujiao Information Co., Ltd.     | ZhixinHuixue Teacher  |
+| MeishuBao                                 | TanChangBao           |
+|                                           | Net Security          |
+| ByteDance Livestream                      | Livestream SDK        |
+| OnePlus Mobile                            | OPNote                |
 
-&nbsp;
-&nbsp;
-
+---
 
 # My Pages
 
 Email：[kunminx@gmail.com](mailto:kunminx@gmail.com)
 
-Juejin：[KunMinX 在掘金](https://juejin.im/user/58ab0de9ac502e006975d757/posts)
+Juejin：[KunMinX at Juejin](https://juejin.im/user/58ab0de9ac502e006975d757/posts)
 
-[《重学安卓》 专栏](https://xiaozhuanlan.com/kunminx)
+[《Learning Android Again》 Column](https://xiaozhuanlan.com/kunminx)
 
-付费读者加微信进群：myatejx
+Paid readers add WeChat to join the group: myatejx
 
-[![重学安卓小专栏](https://images.xiaozhuanlan.com/photo/2021/d493a54a32e38e7fbcfa68d424ebfd1e.png)](https://xiaozhuanlan.com/kunminx)
+[![Learning Android Again Small Column](https://images.xiaozhuanlan.com/photo/2021/d493a54a32e38e7fbcfa68d424ebfd1e.png)](https://xiaozhuanlan.com/kunminx)
 
-&nbsp;
-&nbsp;
+---
 
 # License
 
@@ -183,4 +159,3 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
-
