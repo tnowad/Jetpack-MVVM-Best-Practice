@@ -38,11 +38,12 @@ import com.kunminx.puremusic.domain.proxy.PlayerManager;
 
 public class MainActivity extends BaseActivity {
 
-    //TODO tip 1：基于 "单一职责原则"，应将 ViewModel 划分为 state-ViewModel 和 result-ViewModel，
-    // state-ViewModel 职责仅限于托管、保存和恢复本页面 state，作用域仅限于本页面，
-    // result-ViewModel 职责仅限于 "消息分发" 场景承担 "可信源"，作用域依 "数据请求" 或 "跨页通信" 消息分发范围而定
+    //TODO tip 1: Based on the "Single Responsibility Principle", the ViewModel should be divided into state-ViewModel and result-ViewModel.
+    // The state-ViewModel is responsible only for managing, saving, and restoring the state of the page. Its scope is limited to this page.
+    // The result-ViewModel is responsible for "message dispatch" scenarios and "trusted sources" and its scope depends on the "data request" or
+    // "cross-page communication" message dispatch range.
 
-    // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/8204519736
+    // If this concept is unclear, refer to https://xiaozhuanlan.com/topic/8204519736
 
     private MainActivityStates mStates;
     private PageMessenger mMessenger;
@@ -57,13 +58,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected DataBindingConfig getDataBindingConfig() {
 
-        //TODO tip 2: DataBinding 严格模式：
-        // 将 DataBinding 实例限制于 base 页面中，默认不向子类暴露，
-        // 通过这方式，彻底解决 View 实例 Null 安全一致性问题，
-        // 如此，View 实例 Null 安全性将和基于函数式编程思想的 Jetpack Compose 持平。
-        // 而 DataBindingConfig 就是在这样背景下，用于为 base 页面 DataBinding 提供绑定项。
+        //TODO tip 2: Strict DataBinding Mode:
+        // Restrict the DataBinding instance to the base page and do not expose it to subclasses by default.
+        // This approach thoroughly resolves the issue of View instance null safety consistency.
+        // In this way, the View instance null safety will be on par with Jetpack Compose based on functional programming.
+        // DataBindingConfig is used to provide binding items for the base page in this context.
 
-        // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350 和 https://xiaozhuanlan.com/topic/2356748910
+        // If this concept is unclear, refer to https://xiaozhuanlan.com/topic/9816742350 and https://xiaozhuanlan.com/topic/2356748910
 
         return new DataBindingConfig(R.layout.activity_main, BR.vm, mStates)
             .addBindingParam(BR.listener, new ListenerHandler());
@@ -75,10 +76,11 @@ public class MainActivity extends BaseActivity {
 
         PlayerManager.getInstance().init(this);
 
-        //TODO tip 6: 从 PublishSubject 接收回推的数据，并在回调中响应数据的变化，
-        // 也即通过 BehaviorSubject（例如 ObservableField）通知控件属性重新渲染，并为其兜住最后一次状态，
+        //TODO tip 6: Receive the push-back data from PublishSubject and respond to changes in data in the callback,
+        // i.e., notify the View (using BehaviorSubject or ObservableField) to re-render its properties
+        // and remember the last state.
 
-        //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+        // If this concept is unclear, refer to https://xiaozhuanlan.com/topic/6741932805
 
         mMessenger.output(this, messages -> {
             switch (messages.eventId) {
@@ -88,7 +90,7 @@ public class MainActivity extends BaseActivity {
                         nav.navigateUp();
                     } else if (Boolean.TRUE.equals(mStates.isDrawerOpened.get())) {
 
-                        //TODO 同 tip 3
+                        //TODO same as tip 3
                         mStates.openDrawer.set(false);
                     } else {
                         super.onBackPressed();
@@ -96,19 +98,17 @@ public class MainActivity extends BaseActivity {
                     break;
                 case Messages.EVENT_OPEN_DRAWER:
 
-                    //TODO yes：同 tip 2:
-                    // 此处将 drawer 的 open 和 close 都放在 drawerBindingAdapter 中操作，
-                    // 规避 View 实例 Null 安全一致性问题，因为横屏布局无 drawerLayout。
-                    // 此处如果用手动判空，很容易因疏忽而造成空引用。
+                    //TODO yes: Same as tip 2:
+                    // Handle the open and close of the drawer in the drawerBindingAdapter to avoid View instance null safety issues
+                    // because the horizontal layout might not have a drawerLayout.
+                    // Using manual null checks here might easily cause null reference issues.
 
-                    //TODO 此外，此处为 drawerLayout 绑定状态 "openDrawer"，使用 "去防抖" ObservableField 子类，
-                    // 主要考虑到 ObservableField 具有 "防抖" 特性，不适合该场景。
-
-                    //如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350
+                    // Additionally, bind the "openDrawer" state to the drawerLayout using a "debounced" ObservableField subclass,
+                    // primarily because ObservableField has "debounce" characteristics which are not suitable for this case.
 
                     mStates.openDrawer.set(true);
 
-                    //TODO do not:（容易因疏忽埋下 View 实例 Null 安全一致性隐患）
+                    //TODO do not: (This could lead to hidden null safety issues)
 
                     /*if (mBinding.dl != null) {
                         if (aBoolean && !mBinding.dl.isDrawerOpen(GravityCompat.START)) {
@@ -123,11 +123,10 @@ public class MainActivity extends BaseActivity {
 
         DrawerCoordinateManager.getInstance().isEnableSwipeDrawer().observe(this, aBoolean -> {
 
-            //TODO yes: 同 tip 2
-
+            //TODO yes: Same as tip 2
             mStates.allowDrawerOpen.set(aBoolean);
 
-            // TODO do not:（容易因疏忽埋下 View 实例 Null 安全一致性隐患）
+            //TODO do not: (This could lead to hidden null safety issues)
 
             /*if (mBinding.dl != null) {
                 mBinding.dl.setDrawerLockMode(aBoolean
@@ -142,13 +141,14 @@ public class MainActivity extends BaseActivity {
         super.onWindowFocusChanged(hasFocus);
         if (!mIsListened) {
 
-            // TODO tip 3：此处演示向 "可信源" 发送请求，以便实现 "生命周期安全、消息分发可靠一致" 的通知。
+            //TODO tip 3: This demonstrates sending a request to a "trusted source" to achieve reliable "lifecycle-safe and consistent message dispatch" notifications.
 
-            // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/0168753249
+            // If this concept is unclear, refer to https://xiaozhuanlan.com/topic/0168753249
             // --------
-            // 与此同时，此处传达的另一思想是 "最少知道原则"，
-            // Activity 内部事情在 Activity 内部消化，不要试图在 fragment 中调用和操纵 Activity 内部东西。
-            // 因为 Activity 端的处理后续可能会改变，且可受用于更多 fragment，而不单单是本 fragment。
+            // At the same time, this emphasizes the "least knowledge principle",
+            // Internal activity operations should be handled within the activity itself,
+            // rather than trying to invoke or manipulate internal activity components from a fragment.
+            // This is because the activity's handling might change in the future and can be applied to more fragments, not just this one.
 
             mMessenger.input(new Messages(Messages.EVENT_ADD_SLIDE_LISTENER));
 
@@ -159,7 +159,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
 
-        // TODO 同 tip 3
+        //TODO same as tip 3
 
         mMessenger.input(new Messages(Messages.EVENT_CLOSE_SLIDE_PANEL_IF_EXPANDED));
     }
@@ -179,11 +179,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    //TODO tip 5：基于单一职责原则，抽取 Jetpack ViewModel "状态保存和恢复" 的能力作为 StateHolder，
-    // 并使用 ObservableField 的改良版子类 State 来承担 BehaviorSubject，用作所绑定控件的 "可信数据源"，
-    // 从而在收到来自 PublishSubject 的结果回推后，响应结果数据的变化，也即通知控件属性重新渲染，并为其兜住最后一次状态，
+    //TODO tip 5: Based on the Single Responsibility Principle, extract the state-saving and recovery capability of Jetpack ViewModel as a StateHolder,
+    // and use the enhanced ObservableField subclass "State" to act as a BehaviorSubject,
+    // serving as the "trusted data source" for the bound View components.
+    // When receiving results from PublishSubject, it will respond to the changes and re-render the View properties, keeping the last state.
 
-    //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+    // If this concept is unclear, refer to https://xiaozhuanlan.com/topic/6741932805
 
     public static class MainActivityStates extends StateHolder {
 
@@ -195,3 +196,4 @@ public class MainActivity extends BaseActivity {
 
     }
 }
+

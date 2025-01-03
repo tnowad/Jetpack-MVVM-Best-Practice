@@ -175,9 +175,10 @@ public class PlayerSlideListener implements SlidingUpPanelLayout.PanelSlideListe
     }
 
     /**
-     * TODO tip：使用 ObservableField 绑定，尽可能减少 View 实例 Null 安全一致性问题
-     * <p>
-     *  如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350 和 https://xiaozhuanlan.com/topic/2356748910
+     * TODO tip: Use ObservableField binding to minimize View instance null safety consistency issues as much as possible.
+     *
+     * For further understanding, refer to:
+     * https://xiaozhuanlan.com/topic/9816742350 and https://xiaozhuanlan.com/topic/2356748910
      */
     public static class SlideAnimatorStates extends StateHolder {
         public final State<Float> titleTranslationX = new State<>(0f);
