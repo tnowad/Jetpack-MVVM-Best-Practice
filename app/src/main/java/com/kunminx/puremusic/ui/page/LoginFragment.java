@@ -39,15 +39,14 @@ import com.kunminx.puremusic.domain.message.PageMessenger;
 import com.kunminx.puremusic.domain.request.AccountRequester;
 
 /**
- * Create by KunMinX at 20/04/26
+ * Created by KunMinX at 20/04/26
  */
 public class LoginFragment extends BaseFragment {
 
-    //TODO tip 1：基于 "单一职责原则"，应将 ViewModel 划分为 state-ViewModel 和 result-ViewModel，
-    // state-ViewModel 职责仅限于托管、保存和恢复本页面 state，作用域仅限于本页面，
-    // result-ViewModel 职责仅限于 "消息分发" 场景承担 "可信源"，作用域依 "数据请求" 或 "跨页通信" 消息分发范围而定
-
-    // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/8204519736
+    //TODO tip 1: Based on the "Single Responsibility Principle," ViewModel should be divided into state-ViewModel and result-ViewModel.
+    // The state-ViewModel should only be responsible for managing, saving, and restoring the page's state, with its scope limited to the page itself.
+    // The result-ViewModel should be responsible only for "message dispatch" and handling "trusted sources" with a scope defined by "data requests" or "cross-page communication" scenarios.
+    // For a deeper understanding, refer to: https://xiaozhuanlan.com/topic/8204519736
 
     private LoginStates mStates;
     private AccountRequester mAccountRequester;
@@ -64,13 +63,12 @@ public class LoginFragment extends BaseFragment {
     @Override
     protected DataBindingConfig getDataBindingConfig() {
 
-        //TODO tip 2: DataBinding 严格模式：
-        // 将 DataBinding 实例限制于 base 页面中，默认不向子类暴露，
-        // 通过这方式，彻底解决 View 实例 Null 安全一致性问题，
-        // 如此，View 实例 Null 安全性将和基于函数式编程思想的 Jetpack Compose 持平。
-        // 而 DataBindingConfig 就是在这样背景下，用于为 base 页面 DataBinding 提供绑定项。
+        //TODO tip 2: Strict mode for DataBinding:
+        // Limit the DataBinding instance to the base page, making it not exposed to subclasses by default.
+        // This approach resolves the issue of ensuring null safety for View instances, achieving consistent null safety between View instances and Jetpack Compose, based on functional programming principles.
+        // DataBindingConfig provides the binding items for the base page's DataBinding in this context.
 
-        // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350 和 https://xiaozhuanlan.com/topic/2356748910
+        // For more details, refer to: https://xiaozhuanlan.com/topic/9816742350 and https://xiaozhuanlan.com/topic/2356748910
 
         return new DataBindingConfig(R.layout.fragment_login, BR.vm, mStates)
             .addBindingParam(BR.click, new ClickProxy());
@@ -82,9 +80,9 @@ public class LoginFragment extends BaseFragment {
 
         getLifecycle().addObserver(DrawerCoordinateManager.getInstance());
 
-        //TODO tip 3：让 accountRequest 可观察页面生命周期，
-        // 从而在页面即将退出、且登录请求由于网络延迟尚未完成时，
-        // 及时通知数据层取消本次请求，以避免资源浪费和一系列不可预期问题。
+        //TODO tip 3: Make the accountRequest observable of the page's lifecycle.
+        // So, if the page is about to exit and the login request has not finished due to network delay,
+        // it can notify the data layer to cancel the request in time to avoid resource waste and unexpected issues.
 
         getLifecycle().addObserver(mAccountRequester);
     }
@@ -93,11 +91,11 @@ public class LoginFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO tip 4: 从可信源 Requester 通过 immutable Result 获取请求结果的只读数据，set 给 mutable State，
-        //而非 Result、State 不分，直接在页面 set Result，
+        //TODO tip 4: Obtain read-only data from the trusted Requester using immutable Result, and set it to the mutable State.
+        // Instead of directly setting Result on the page, separate Result and State.
 
-        //如这么说无体会，详见《吃透 LiveData 本质，享用可靠消息鉴权机制》解析。
-        //https://xiaozhuanlan.com/topic/6017825943
+        // For further understanding, refer to the explanation on "Master LiveData's Essence and Enjoy Reliable Message Authentication Mechanism."
+        // https://xiaozhuanlan.com/topic/6017825943
 
         mAccountRequester.getTokenResult().observe(getViewLifecycleOwner(), dataResult -> {
             if (!dataResult.getResponseStatus().isSuccess()) {
@@ -109,9 +107,9 @@ public class LoginFragment extends BaseFragment {
             String s = dataResult.getResult();
             if (TextUtils.isEmpty(s)) return;
 
-            //TODO tip：成功获取 token 后，可通过 KeyValueX 框架存储配置，
-            // 以及通过作用域为 Application 的 PageMessenger 框架通知其他页面刷新状态，
-            // 具体详见 Configs 类和 PageMessenger 类说明
+            //TODO tip: After successfully obtaining the token, store it using the KeyValueX framework.
+            // Also, notify other pages to refresh their state using the Application-scoped PageMessenger framework.
+            // For more details, refer to Configs and PageMessenger classes.
 
             mConfigs.token().set(s);
             mStates.loadingVisible.set(false);
@@ -128,10 +126,10 @@ public class LoginFragment extends BaseFragment {
 
         public void login() {
 
-            //TODO tip 5：通过双向绑定，使能通过 state-ViewModel 中与 xml 控件发生绑定的"可观察数据" 拿到控件数据，
-            // 避免直接接触控件实例而埋下 Null 安全一致性隐患。
+            //TODO tip 5: Enable two-way data binding to obtain data bound to XML controls from the state-ViewModel's observable data.
+            // This avoids directly interacting with control instances and prevents potential null safety consistency issues.
 
-            //如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350
+            // For further understanding, refer to: https://xiaozhuanlan.com/topic/9816742350
 
             if (TextUtils.isEmpty(mStates.name.get()) || TextUtils.isEmpty(mStates.password.get())) {
                 ToastUtils.showLongToast(getString(R.string.username_or_pwd_incomplete));
@@ -143,11 +141,11 @@ public class LoginFragment extends BaseFragment {
         }
     }
 
-    //TODO tip 6：基于单一职责原则，抽取 Jetpack ViewModel "状态保存和恢复" 的能力作为 StateHolder，
-    // 并使用 ObservableField 的改良版子类 State 来承担 BehaviorSubject，用作所绑定控件的 "可信数据源"，
-    // 从而在收到来自 PublishSubject 的结果回推后，响应结果数据的变化，也即通知控件属性重新渲染，并为其兜住最后一次状态，
+    //TODO tip 6: Based on the Single Responsibility Principle, extract the ability of Jetpack ViewModel to "save and restore state" as StateHolder.
+    // Use a subclass of ObservableField, called State, to act as a BehaviorSubject, serving as the "trusted data source" for bound UI components.
+    // This allows UI components to re-render their properties upon receiving data pushed back from PublishSubject and maintain the last state.
 
-    //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+    // For more details, refer to: https://xiaozhuanlan.com/topic/6741932805
 
     public static class LoginStates extends StateHolder {
 

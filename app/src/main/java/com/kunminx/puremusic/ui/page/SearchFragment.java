@@ -35,15 +35,15 @@ import com.kunminx.puremusic.domain.message.DrawerCoordinateManager;
 import com.kunminx.puremusic.domain.request.DownloadRequester;
 
 /**
- * Create by KunMinX at 19/10/29
+ * Created by KunMinX on 19/10/29
  */
 public class SearchFragment extends BaseFragment {
 
-    //TODO tip 1：基于 "单一职责原则"，应将 ViewModel 划分为 state-ViewModel 和 result-ViewModel，
-    // state-ViewModel 职责仅限于托管、保存和恢复本页面 state，作用域仅限于本页面，
-    // result-ViewModel 职责仅限于 "消息分发" 场景承担 "可信源"，作用域依 "数据请求" 或 "跨页通信" 消息分发范围而定
+    // TODO tip 1: According to the "Single Responsibility Principle," the ViewModel should be divided into state-ViewModel and result-ViewModel.
+    // The state-ViewModel is only responsible for managing, saving, and restoring the state of this page, its scope is limited to this page.
+    // The result-ViewModel is only responsible for "message dispatching" and its scope depends on "data requests" or "cross-page communication" message distribution.
 
-    // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/8204519736
+    // For more understanding, refer to https://xiaozhuanlan.com/topic/8204519736
 
     private SearchStates mStates;
     private DownloadRequester mDownloadRequester;
@@ -58,14 +58,12 @@ public class SearchFragment extends BaseFragment {
 
     @Override
     protected DataBindingConfig getDataBindingConfig() {
+        // TODO tip 2: Strict DataBinding mode:
+        // Limit the DataBinding instance to the base page and do not expose it to subclasses by default.
+        // This way, the View instance null safety issue is solved completely.
+        // Thus, the null safety of View instances will be as reliable as Jetpack Compose, which follows functional programming principles.
 
-        //TODO tip 2: DataBinding 严格模式：
-        // 将 DataBinding 实例限制于 base 页面中，默认不向子类暴露，
-        // 通过这方式，彻底解决 View 实例 Null 安全一致性问题，
-        // 如此，View 实例 Null 安全性将和基于函数式编程思想的 Jetpack Compose 持平。
-        // 而 DataBindingConfig 就是在这样背景下，用于为 base 页面 DataBinding 提供绑定项。
-
-        // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350 和 https://xiaozhuanlan.com/topic/2356748910
+        // For more understanding, refer to https://xiaozhuanlan.com/topic/9816742350 and https://xiaozhuanlan.com/topic/2356748910
 
         return new DataBindingConfig(R.layout.fragment_search, BR.vm, mStates)
             .addBindingParam(BR.click, new ClickProxy());
@@ -77,7 +75,7 @@ public class SearchFragment extends BaseFragment {
 
         getLifecycle().addObserver(DrawerCoordinateManager.getInstance());
 
-        //TODO tip 3：绑定跟随视图控制器生命周期、可叫停、单独放在 UseCase 中处理的业务
+        // TODO tip 3: Bind business logic that can be paused independently in the lifecycle to UseCase and observe it.
         getLifecycle().addObserver(mDownloadRequester);
     }
 
@@ -85,9 +83,9 @@ public class SearchFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO tip 8: 此处演示使用 MVI-Dispatcher input-output 接口完成数据请求响应
+        // TODO tip 8: Here, the MVI-Dispatcher input-output interface is used for data request responses.
 
-        //如这么说无体会，详见《领域层设计》篇拆解 https://juejin.cn/post/7117498113983512589
+        // For more understanding, refer to "Domain Layer Design" breakdown at https://juejin.cn/post/7117498113983512589
 
         mDownloadRequester.output(this, downloadEvent -> {
             if (downloadEvent.eventId == DownloadEvent.EVENT_DOWNLOAD) {
@@ -97,7 +95,7 @@ public class SearchFragment extends BaseFragment {
             }
         });
 
-        //TODO tip 9: 此处演示 "同一 Result-ViewModel 类，在不同作用域下实例化，造成的不同结果"
+        // TODO tip 9: This demonstrates "the same Result-ViewModel class instantiated in different scopes leading to different results."
 
         mGlobalDownloadRequester.output(this, downloadEvent -> {
             if (downloadEvent.eventId == DownloadEvent.EVENT_DOWNLOAD_GLOBAL) {
@@ -108,10 +106,10 @@ public class SearchFragment extends BaseFragment {
         });
     }
 
-    // TODO tip 4：此处通过 DataBinding 规避 setOnClickListener 时存在的 View 实例 Null 安全一致性问题，
+    // TODO tip 4: Using DataBinding here avoids the null safety consistency issues of setOnClickListener when the View instance is null.
 
-    // 也即，有视图就绑定，无就无绑定，总之 不会因不一致性造成 View 实例 Null 安全问题。
-    // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350
+    // That is, bind the view only when the view exists; if it doesn't, there's no binding, so the View instance will never cause null safety issues.
+    // For more understanding, refer to https://xiaozhuanlan.com/topic/9816742350
 
     public class ClickProxy {
 
@@ -127,24 +125,24 @@ public class SearchFragment extends BaseFragment {
             openUrlInBrowser(Const.COLUMN_LINK);
         }
 
-        //TODO tip: 同 tip 8
+        // TODO tip: Same as tip 8
 
         public void testDownload() {
             mGlobalDownloadRequester.input(new DownloadEvent(DownloadEvent.EVENT_DOWNLOAD_GLOBAL));
         }
 
-        //TODO tip 5: 在 UseCase 中 执行可跟随生命周期中止的下载任务
+        // TODO tip 5: Execute downloadable tasks that follow the lifecycle's end in the UseCase.
 
         public void testLifecycleDownload() {
             mDownloadRequester.input(new DownloadEvent(DownloadEvent.EVENT_DOWNLOAD));
         }
     }
 
-    //TODO tip 6：基于单一职责原则，抽取 Jetpack ViewModel "状态保存和恢复" 的能力作为 StateHolder，
-    // 并使用 ObservableField 的改良版子类 State 来承担 BehaviorSubject，用作所绑定控件的 "可信数据源"，
-    // 从而在收到来自 PublishSubject 的结果回推后，响应结果数据的变化，也即通知控件属性重新渲染，并为其兜住最后一次状态，
+    // TODO tip 6: Based on the Single Responsibility Principle, extract the ability to "save and restore state" of Jetpack ViewModel into a StateHolder.
+    // Use a subclass of State, an improved version of ObservableField, to function as the BehaviorSubject.
+    // It serves as the "trusted data source" for the bound controls, triggering re-rendering when data changes, and ensuring that the last state is maintained.
 
-    //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+    // For more understanding, refer to https://xiaozhuanlan.com/topic/6741932805
 
     public static class SearchStates extends StateHolder {
 
@@ -157,3 +155,4 @@ public class SearchFragment extends BaseFragment {
         public final State<Boolean> enableGlobalDownload = new State<>(true);
     }
 }
+

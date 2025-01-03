@@ -37,15 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Create by KunMinX at 19/10/29
+ * Created by KunMinX at 19/10/29
  */
 public class DrawerFragment extends BaseFragment {
 
-    //TODO tip 1：基于 "单一职责原则"，应将 ViewModel 划分为 state-ViewModel 和 result-ViewModel，
-    // state-ViewModel 职责仅限于托管、保存和恢复本页面 state，作用域仅限于本页面，
-    // result-ViewModel 职责仅限于 "消息分发" 场景承担 "可信源"，作用域依 "数据请求" 或 "跨页通信" 消息分发范围而定
-
-    // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/8204519736
+    //TODO tip 1: Based on the "Single Responsibility Principle," ViewModel should be divided into state-ViewModel and result-ViewModel.
+    // The state-ViewModel should only be responsible for managing, saving, and restoring the page's state, with its scope limited to the page itself.
+    // The result-ViewModel should be responsible only for "message dispatch" and handling "trusted sources" with a scope defined by "data requests" or "cross-page communication" scenarios.
+    // For a deeper understanding, refer to: https://xiaozhuanlan.com/topic/8204519736
 
     private DrawerStates mStates;
     private InfoRequester mInfoRequester;
@@ -59,13 +58,12 @@ public class DrawerFragment extends BaseFragment {
     @Override
     protected DataBindingConfig getDataBindingConfig() {
 
-        //TODO tip 2: DataBinding 严格模式：
-        // 将 DataBinding 实例限制于 base 页面中，默认不向子类暴露，
-        // 通过这方式，彻底解决 View 实例 Null 安全一致性问题，
-        // 如此，View 实例 Null 安全性将和基于函数式编程思想的 Jetpack Compose 持平。
-        // 而 DataBindingConfig 就是在这样背景下，用于为 base 页面 DataBinding 提供绑定项。
+        //TODO tip 2: Strict mode for DataBinding:
+        // Limit the DataBinding instance to the base page, making it not exposed to subclasses by default.
+        // This approach resolves the issue of ensuring null safety for View instances, achieving consistent null safety between View instances and Jetpack Compose, based on functional programming principles.
+        // DataBindingConfig provides the binding items for the base page's DataBinding in this context.
 
-        // 如这么说无体会，详见 https://xiaozhuanlan.com/topic/9816742350 和 https://xiaozhuanlan.com/topic/2356748910
+        // For more details, refer to: https://xiaozhuanlan.com/topic/9816742350 and https://xiaozhuanlan.com/topic/2356748910
 
         return new DataBindingConfig(R.layout.fragment_drawer, BR.vm, mStates)
             .addBindingParam(BR.click, new ClickProxy())
@@ -76,10 +74,10 @@ public class DrawerFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO tip 3: 从 PublishSubject 接收回推的数据，并在回调中响应数据的变化，
-        // 也即通过 BehaviorSubject（例如 ObservableField）通知控件属性重新渲染，并为其兜住最后一次状态，
+        //TODO tip 3: Receive data pushed from PublishSubject and respond to data changes in the callback.
+        // This involves using BehaviorSubject (e.g., ObservableField) to notify the UI components to re-render their properties and maintain the last known state.
 
-        //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+        // For more details, refer to: https://xiaozhuanlan.com/topic/6741932805
 
         mInfoRequester.getLibraryResult().observe(getViewLifecycleOwner(), dataResult -> {
             if (!dataResult.getResponseStatus().isSuccess()) return;
@@ -95,13 +93,14 @@ public class DrawerFragment extends BaseFragment {
         }
     }
 
-    //TODO tip 5：基于单一职责原则，抽取 Jetpack ViewModel "状态保存和恢复" 的能力作为 StateHolder，
-    // 并使用 ObservableField 的改良版子类 State 来承担 BehaviorSubject，用作所绑定控件的 "可信数据源"，
-    // 从而在收到来自 PublishSubject 的结果回推后，响应结果数据的变化，也即通知控件属性重新渲染，并为其兜住最后一次状态，
+    //TODO tip 5: Based on the Single Responsibility Principle, extract the capability of Jetpack ViewModel to "save and restore state" into StateHolder.
+    // Use a subclass of ObservableField, called State, to function as a BehaviorSubject, serving as the "trusted data source" for bound UI components.
+    // This allows the UI components to re-render their properties when the result data is pushed back via PublishSubject, keeping the last state intact.
 
-    //如这么说无体会，详见 https://xiaozhuanlan.com/topic/6741932805
+    // For more details, refer to: https://xiaozhuanlan.com/topic/6741932805
 
     public static class DrawerStates extends StateHolder {
         public final State<List<LibraryInfo>> list = new State<>(new ArrayList<>());
     }
 }
+
